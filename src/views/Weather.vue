@@ -11,7 +11,7 @@
             <ValidationObserver ref="observer" v-slot="{ invalid, handleSubmit }">
               <form @submit.prevent="handleSubmit(submit)">
                 <div class="mt-10 md:grid md:grid-cols-3 md:gap-3">
-                  <ValidationProvider rules="required|max:20" v-slot="{ errors, validate }">
+                  <ValidationProvider rules="required|max:100" v-slot="{ errors, validate }">
                     <Input 
                       id="city_name" 
                       name="city_name" 
@@ -22,7 +22,7 @@
                       :errors="errors"
                     />
                   </ValidationProvider>
-                  <ValidationProvider rules="required|max:20" v-slot="{ errors, validate }">
+                  <ValidationProvider rules="required|max:100" v-slot="{ errors, validate }">
                     <Input 
                       id="state_code" 
                       name="state_code" 
@@ -33,7 +33,7 @@
                       :errors="errors"
                     />
                   </ValidationProvider>
-                  <ValidationProvider rules="required|max:20" v-slot="{ errors, validate }">
+                  <ValidationProvider rules="required|max:100" v-slot="{ errors, validate }">
                     <Input 
                       id="country_code" 
                       name="country_code" 

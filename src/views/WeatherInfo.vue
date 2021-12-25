@@ -99,6 +99,7 @@ export default {
       })
       .then((result) => {
         this.loading = false;
+        console.log(result)
         this.data = result.data.data;
         this.city = result.data.data.city.name;
       })

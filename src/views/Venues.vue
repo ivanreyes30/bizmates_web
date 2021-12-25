@@ -12,7 +12,7 @@
             <ValidationObserver ref="observer" v-slot="{ handleSubmit, invalid }">
               <form @submit.prevent="handleSubmit(submit)">
                 <div class="grid grid-rows-2 md:grid-cols-2 gap-5">
-                  <ValidationProvider rules="required|max:20" v-slot="{ errors, validate }">
+                  <ValidationProvider rules="required|max:100" v-slot="{ errors, validate }">
                     <Input 
                       id="location" 
                       name="location" 
@@ -22,7 +22,7 @@
                       :errors="errors"
                     />
                   </ValidationProvider>
-                  <ValidationProvider rules="required|max:20" v-slot="{ errors }">
+                  <ValidationProvider rules="required|max:100" v-slot="{ errors }">
                     <v-select 
                       label="label" 
                       :options="category_taxonomy" 
@@ -54,7 +54,8 @@ export default {
     coords: '',
     location: '',
     categories: '',
-    category_taxonomy: []
+    category_taxonomy: [],
+    categories_id: ''
   }),
   components: {
     Input,
@@ -63,17 +64,18 @@ export default {
   methods: {
     submit() {
       this.$router.push({path:'/venues/info', query: {
-        categories: this.categories,
+        categories: this.categories_id,
         near: this.location,
         ll: this.coords
       }})
     },
     onChangeInputs({target}, validate) {
       this[target.name] = target.value;
-      validate(target.value)
+      validate(target.value);
     },
     onChangeSelect(value) {
-      this.categories = value.id;
+      this.categories = value.label;
+      this.categories_id = value.id;
     },
     getCategoryTaxonomy() {
       this.$api().get('places/category_taxonomy')

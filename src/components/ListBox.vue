@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="w-82">
+    <div class="">
 			<div class="text-center m-5 bg-blue-400 text-white font-semibold rounded-md p-2">
 				<h3>{{date}}</h3>
 			</div>

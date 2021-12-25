@@ -7,6 +7,10 @@
 	border-bottom: 4px solid rgb(34, 197, 94);
 }
 
+.router-link-exact-active {
+	border-bottom: none;
+}
+
 .tbl-weather th{
 	padding: 0px 5px 0px 5px;
 	text-align: left;
@@ -37,4 +41,15 @@
 	background: white;
 	padding: 4px;
 	/* border-radius: 5px; */
+}
+
+.rgba-black {
+	background: rgb(0,0,0,0.5);
+}
+
+.fade-enter-active, .fade-leave-active {
+	transition: opacity .5s;
+  }
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+	opacity: 0;
 }

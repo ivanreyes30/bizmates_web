@@ -11,62 +11,39 @@
             </h1>
             <div class="flex items-center mt-5 space-x-2 lg:justify-start justify-center">
               <i class="fas fa-map-marker text-xl"></i>
-              
+              <span class="font-semibold text-lg">{{this.$route.query.near.toUpperCase()}}</span>
             </div>
           </div>
         </div>
-        <div class="border-2 border-gray-200 w-full bg-white rounded card">
-          <div class="flex">
-            <div class="m-3">
-              <img class="h-64 w-64 p-1" src="https://fastly.4sqi.net/img/general/original/-u9hO1TPU7eJJTCu5BUJNjJ47QWjUBna3A5vRaI3rUU.jpg">
-              <div class="w-64 p-1 flex flex-wrap justify-center items-start">
-                <img class="w-12 border-white border-2 h-12" src="https://fastly.4sqi.net/img/general/original/-u9hO1TPU7eJJTCu5BUJNjJ47QWjUBna3A5vRaI3rUU.jpg">
-                <img class="w-12 border-white border-2 h-12" src="https://fastly.4sqi.net/img/general/original/-u9hO1TPU7eJJTCu5BUJNjJ47QWjUBna3A5vRaI3rUU.jpg">
-                <img class="w-12 border-white border-2 h-12" src="https://fastly.4sqi.net/img/general/original/-u9hO1TPU7eJJTCu5BUJNjJ47QWjUBna3A5vRaI3rUU.jpg">
-                <img class="w-12 border-white border-2 h-12" src="https://fastly.4sqi.net/img/general/original/-u9hO1TPU7eJJTCu5BUJNjJ47QWjUBna3A5vRaI3rUU.jpg">
-                <img class="w-12 border-white border-2 h-12" src="https://fastly.4sqi.net/img/general/original/-u9hO1TPU7eJJTCu5BUJNjJ47QWjUBna3A5vRaI3rUU.jpg">
-                <img class="w-12 border-white border-2 h-12" src="https://fastly.4sqi.net/img/general/original/-u9hO1TPU7eJJTCu5BUJNjJ47QWjUBna3A5vRaI3rUU.jpg">
-                <img class="w-12 border-white border-2 h-12" src="https://fastly.4sqi.net/img/general/original/-u9hO1TPU7eJJTCu5BUJNjJ47QWjUBna3A5vRaI3rUU.jpg">
-                <img class="w-12 border-white border-2 h-12" src="https://fastly.4sqi.net/img/general/original/-u9hO1TPU7eJJTCu5BUJNjJ47QWjUBna3A5vRaI3rUU.jpg">
-                <img class="w-12 border-white border-2 h-12" src="https://fastly.4sqi.net/img/general/original/-u9hO1TPU7eJJTCu5BUJNjJ47QWjUBna3A5vRaI3rUU.jpg">
-                <img class="w-12 border-white border-2 h-12" src="https://fastly.4sqi.net/img/general/original/-u9hO1TPU7eJJTCu5BUJNjJ47QWjUBna3A5vRaI3rUU.jpg">
-              </div>
-            </div>
-            <div class="m-3">
-              <h1 class="text-2xl font-semibold">La Carmela de Boracay Hotel</h1>
-            </div>
-          </div>
-        </div> 
-        <!-- <ListBox 
-          v-for="(list, idx) in data.list" 
-          :key="idx"
-          :clouds="list.clouds"
-          :date="list.date"
-          :day="list.day"
-          :dt_txt="list.dt_txt"
-          :feels_like="list.feels_like"
-          :grnd_level="list.grnd_level"
-          :humidity="list.humidity"
-          :pressure="list.pressure"
-          :sea_level="list.sea_level"
-          :temp="list.temp"
-          :temp_kf="list.temp_kf"
-          :temp_max="list.temp_max"
-          :temp_min="list.temp_min"
-          :weather="list.weather"
-          :wind="list.wind"
-        /> -->
+        <div class="flex flex-wrap justify-center">
+          <Card 
+            v-for="(list, idx) in data.results" 
+            :key="'card'+idx"
+            :address="(list.location.address !== undefined ? list.location.address + ', ' : '') +list.location.locality+', '+list.location.region+', '+list.location.postcode+', '+list.location.country"
+            :categories="list.categories"
+            :name="list.name"
+            :images="list.images"
+            @onClickImg="onClickImg($event)"
+            @onCloseModal="onCloseModal()"
+          />
+        </div>
       </div>
     </div>
+    <transition name="fade">
+      <Modal v-if="show_modal" title="Image Preview" @onCloseModal="onCloseModal()">
+        <template v-slot:image_preview>
+          <img :src="src_preview"/>
+        </template>
+      </Modal>
+    </transition>
   </div>
 </template>
 
 <script>
 import Error from '../components/Error.vue'
 import Loading from '../components/Loading.vue'
-// import ListBox from '../components/ListBox.vue'
-// import Select from '../components/Select.vue'
-
+import Card from '../components/Card.vue'
+import Modal from '../components/Modal.vue'
 
 export default {
   name: 'VenuesInfo',
@@ -76,10 +53,14 @@ export default {
     loading: false,
     display: false,
     data: [],
+    src_preview: '',
+    show_modal: false
   }),
   components: {
     Error,
     Loading,
+    Card,
+    Modal
   },
   methods: {
     getInfo() {
@@ -91,9 +72,8 @@ export default {
       })
       .then((result) => {
         this.loading = false;
-        console.log(result)
-        // this.data = result.data.data;
-        // this.city = result.data.data.city.name;
+        this.data = result.data.data;
+        console.log(this.data)
       })
       .catch((error) => {
         this.loading = false;
@@ -101,6 +81,13 @@ export default {
         this.code = error.response.status;
       })
     },
+    onClickImg(value) {
+      this.src_preview = value;
+      this.show_modal = true;
+    },
+    onCloseModal() {
+      this.show_modal = false;
+    }
   },
   created() {
     this.getInfo();
