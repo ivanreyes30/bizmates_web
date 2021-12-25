@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Weather from '../views/Weather.vue'
 import WeatherInfo from '../views/WeatherInfo.vue'
 import Venues from '../views/Venues.vue'
+import VenuesInfo from '../views/VenuesInfo.vue'
 
 Vue.use(VueRouter)
 
@@ -27,6 +28,11 @@ const routes = [
     path: '/venues',
     name: 'Venues',
     component: Venues
+  },
+  {
+    path: '/venues/info',
+    name: 'VenuesInfo',
+    component: VenuesInfo
   },
   {
     path: '/about',

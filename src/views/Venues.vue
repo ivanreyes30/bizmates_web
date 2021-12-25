@@ -26,7 +26,7 @@
                     <v-select 
                       label="label" 
                       :options="category_taxonomy" 
-                      v-model="category"
+                      v-model="categories"
                       @input="onChangeSelect"
                       placeholder="Select Category"
                     ></v-select>
@@ -37,48 +37,6 @@
                 </div>
               </form>
             </ValidationObserver>
-            <!-- <ValidationObserver ref="observer" v-slot="{ invalid, handleSubmit }">
-              <form @submit.prevent="handleSubmit(submit)">
-                <div class="mt-10 md:grid md:grid-cols-3 md:gap-3">
-                  <ValidationProvider rules="required|max:20" v-slot="{ errors, validate }">
-                    <Input 
-                      id="city_name" 
-                      name="city_name" 
-                      placeholder="City Name" 
-                      input="1" 
-                      add_class="mb-3 flex-none"
-                      @onChangeInputs="onChangeInputs($event, validate)"
-                      :errors="errors"
-                    />
-                  </ValidationProvider>
-                  <ValidationProvider rules="required|max:20" v-slot="{ errors, validate }">
-                    <Input 
-                      id="state_code" 
-                      name="state_code" 
-                      placeholder="State Code" 
-                      input="1" 
-                      add_class="mb-3 flex-none"
-                      @onChangeInputs="onChangeInputs($event, validate)"
-                      :errors="errors"
-                    />
-                  </ValidationProvider>
-                  <ValidationProvider rules="required|max:20" v-slot="{ errors, validate }">
-                    <Input 
-                      id="country_code" 
-                      name="country_code" 
-                      placeholder="Country Code" 
-                      input="1" add_class="mb-3 flex-none"
-                      @onChangeInputs="onChangeInputs($event, validate)"
-                      :errors="errors"
-                    />
-                  </ValidationProvider>
-                </div>
-                <div class="mt-10">
-                  <Button v-if="invalid" type="submit" placeholder="SUBMIT" button="3"/>
-                  <Button v-if="!invalid" type="submit" placeholder="SUBMIT" button="2"/>
-                </div>
-              </form>
-            </ValidationObserver> -->
           </div>
         </div>
       </div>
@@ -94,9 +52,8 @@ export default {
   name: 'Venues',
   data: () => ({
     coords: '',
-    state_code: '',
-    country_code: '',
-    category: '',
+    location: '',
+    categories: '',
     category_taxonomy: []
   }),
   components: {
@@ -105,10 +62,10 @@ export default {
   },
   methods: {
     submit() {
-      this.$router.push({path:'/weather/info', query: {
-        city_name: this.city_name,
-        state_code: this.state_code,
-        country_code: this.country_code
+      this.$router.push({path:'/venues/info', query: {
+        categories: this.categories,
+        near: this.location,
+        ll: this.coords
       }})
     },
     onChangeInputs({target}, validate) {
@@ -116,7 +73,7 @@ export default {
       validate(target.value)
     },
     onChangeSelect(value) {
-      this.category = value.id;
+      this.categories = value.id;
     },
     getCategoryTaxonomy() {
       this.$api().get('places/category_taxonomy')
