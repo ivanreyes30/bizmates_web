@@ -52,7 +52,7 @@ import Error from '../components/Error.vue'
 import Loading from '../components/Loading.vue'
 import ListBox from '../components/ListBox.vue'
 import Select from '../components/Select.vue'
-
+import { mapActions } from "vuex";
 
 export default {
   name: 'Weather',
@@ -91,15 +91,14 @@ export default {
   methods: {
     getInfo() {
       this.loading = true;
-      this.$api().post('forecast/show', {
+      const query = {
         city_name: this.$route.query.city_name,
         country_code: this.$route.query.country_code,
         state_code: this.$route.query.state_code,
         unit: this.unit
-      })
-      .then((result) => {
+      };
+      this.getWeatherInfo(query).then((result) => {
         this.loading = false;
-        console.log(result)
         this.data = result.data.data;
         this.city = result.data.data.city.name;
       })
@@ -112,7 +111,10 @@ export default {
     onChange({target}) {
       this[target.name] = target.value;
       this.getInfo();
-    }
+    },
+    ...mapActions([
+      'getWeatherInfo'
+    ]),
   },
   created() {
     this.getInfo();

@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="banner h-screen overflow-auto">
-      <div class="relative top-20 p-20">
+      <Alert v-if="alert_show" :type="alert_type" :msg="alert_msg" :title="alert_title"/>
+      <div class="flex items-center h-screen justify-center p-10">
         <div class="flex flex-col justify-center items-center">
           <div class="lg:w-1/2">
             <h1 class="text-5xl font-bold mb-5">Check Venue Places</h1>
@@ -32,8 +33,8 @@
                     ></v-select>
                     <p class="text-red-600" v-if="errors.length > 0">{{errors[0]}}</p>
                   </ValidationProvider>
-                  <Button v-if="invalid" type="submit" placeholder="SUBMIT" button="3"/>
-                  <Button v-if="!invalid" type="submit" placeholder="SUBMIT" button="2"/>
+                  <Button v-if="invalid" type="submit" placeholder="SUBMIT" button="3" :loading="loading_btn"/>
+                  <Button v-if="!invalid" type="submit" placeholder="SUBMIT" button="2" :loading="loading_btn"/>
                 </div>
               </form>
             </ValidationObserver>
@@ -47,6 +48,8 @@
 <script>
 import Input from '../components/Input.vue'
 import Button from '../components/Button.vue'
+import Alert from '../components/Alert.vue'
+import { mapActions } from "vuex";
 
 export default {
   name: 'Venues',
@@ -55,19 +58,46 @@ export default {
     location: '',
     categories: '',
     category_taxonomy: [],
-    categories_id: ''
+    categories_id: '',
+    alert_type: 'error',
+    alert_show: false,
+    alert_msg: '',
+    alert_title: '',
+    loading_btn: false
   }),
   components: {
     Input,
-    Button
+    Button,
+    Alert
   },
   methods: {
     submit() {
-      this.$router.push({path:'/venues/info', query: {
+      this.loading_btn = true;
+      const query = {
         categories: this.categories_id,
         near: this.location,
         ll: this.coords
-      }})
+      };
+      this.getVenuesInfo(query).then((result) => {
+        if(result.data.data.results.length > 0) {
+          this.$router.push({path:'/venues/info', query });
+        }
+        else {
+          this.alert_type = 'success';
+          this.alert_show = true;
+          this.alert_msg = 'No Data Found.';
+          this.alert_title = 'Success!';
+          this.loading_btn = false;
+          setTimeout(() => this.alert_show = false, 3000);
+        }
+      })
+      .catch((error) => {
+        this.alert_show = true;
+        this.loading_btn = false;
+        this.alert_title = 'Warning!';
+        this.alert_msg = error.response.data.message;
+        setTimeout(() => this.alert_show = false, 3000);
+      })
     },
     onChangeInputs({target}, validate) {
       this[target.name] = target.value;
@@ -87,7 +117,10 @@ export default {
         this.message = error.response.data.message;
         this.code = error.response.status;
       })
-    }
+    },
+    ...mapActions([
+      'getVenuesInfo'
+    ]),
   },
   created() {
     navigator.geolocation.getCurrentPosition((result) => {

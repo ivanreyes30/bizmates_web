@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import api from '../plugins/axios';
 
 Vue.use(Vuex)
 
@@ -11,6 +12,28 @@ export default new Vuex.Store({
   mutations: {
   },
   actions: {
+    getVenuesInfo(context, params) {
+      console.log(context)
+      return new Promise(function(myResolve, myReject) {
+        api().post('places/show', params).then((result) => {
+          myResolve(result); 
+        })
+        .catch((error) => {
+          myReject(error)
+        })
+      })
+    },
+    getWeatherInfo(context, params) {
+      console.log(context)
+      return new Promise(function(myResolve, myReject) {
+        api().post('forecast/show', params).then((result) => {
+          myResolve(result); 
+        })
+        .catch((error) => {
+          myReject(error)
+        })
+      })
+    },
   },
   modules: {
   }

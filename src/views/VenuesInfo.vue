@@ -2,7 +2,7 @@
   <div>
     <Error v-if="code != ''" :code="code" :message="message"/>
     <Loading v-if="loading"/>
-    <div class="h-screen overflow-auto" :class="loading">
+    <div class="h-screen overflow-auto">
       <div class="absolute top-20 w-full p-10">
         <div class="grid lg:grid-cols-2 grid-rows-2">
           <div>
@@ -44,6 +44,7 @@ import Error from '../components/Error.vue'
 import Loading from '../components/Loading.vue'
 import Card from '../components/Card.vue'
 import Modal from '../components/Modal.vue'
+import { mapActions } from "vuex";
 
 export default {
   name: 'VenuesInfo',
@@ -63,17 +64,19 @@ export default {
     Modal
   },
   methods: {
+    ...mapActions([
+      'getVenuesInfo'
+    ]),
     getInfo() {
       this.loading = true;
-      this.$api().post('places/show', {
+      const query = {
         near: this.$route.query.near,
         categories: this.$route.query.categories,
         ll: this.$route.query.ll,
-      })
-      .then((result) => {
+      };
+      this.getVenuesInfo(query).then((result) => {
         this.loading = false;
         this.data = result.data.data;
-        console.log(this.data)
       })
       .catch((error) => {
         this.loading = false;
